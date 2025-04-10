@@ -7,16 +7,23 @@ import pandas as pd
 
 
 # GLOBAL VARIABLES
-selected_images = []
-selected_attributes = []
+selected_images = [] #global variable for the selected images by the user
+selected_attributes = [] #global variable for the selected extra attributes by the user
 
 def on_enter(button):
+    """Changes the color of button when mouse hovers over"""
+
     button.config(bg="#402408", fg="white")
 
 def on_leave(button):
+    """Button changes color when the mouse leaves"""
+
     button.config(bg="#ecd7c6", fg="black")
 
 def random_images(directory, images_list):
+    """Chooses 10 random images from a directory containing photos and stores them in a list,
+    the names of the photos are also stored in a list """
+
     images_to_show = []
     images_names = []
     while len(images_to_show) < 10:
@@ -28,6 +35,8 @@ def random_images(directory, images_list):
 
 
 def image_selection(img_name, var):
+    """Append selected photos in the list of selected images"""
+
     global selected_images
     if var.get() == 1:
         if img_name not in selected_images:
@@ -39,6 +48,8 @@ def image_selection(img_name, var):
 
 
 def show_images(frame, images_to_show, images_names):
+    """Shows the 10 random images, organised in two rows and 5 columns"""
+
     image_refs = []
     for index in range(len(images_to_show)):
         img_path = images_to_show[index]
@@ -60,6 +71,8 @@ def show_images(frame, images_to_show, images_names):
 
 
 def reset_selection(directory, images_list, frame):
+    """ Choose new photos and display them if the user doesn't like the previous ones"""
+
     global selected_images
     selected_images.clear()
     img_list, img_name = random_images(directory, images_list)
@@ -69,6 +82,8 @@ def reset_selection(directory, images_list, frame):
 
 
 def attr_selection(attr, v):
+    """Selection of extra attributes, appends the attributes in the extra attributes list variable """
+
     global selected_attributes
     if v.get() == 1:
         if attr not in selected_attributes:
@@ -80,14 +95,19 @@ def attr_selection(attr, v):
 
 
 def go_back(window):
+    """Destroys the current window in case we want to go back """
+
     window.destroy()
 
 
 def open_new_window(attributes, main_window):
+    """ Opens the second window containing the extra attributes, this is where users
+    choose their extra attributes """
+
     #create global variable that has the selected attributes
 
     second_window = tk.Toplevel()
-    second_window.title("Application Dev Log")
+    second_window.title("4BIM Project")
     second_window.geometry("500x600")
     second_window.resizable(False, False)
     second_window.configure(bg="#ecd7c6")
@@ -125,8 +145,10 @@ def open_new_window(attributes, main_window):
 
 
 def open_third_window():
+    """ Opens third window where the result photos are displayed"""
+
     third_window = tk.Toplevel()
-    third_window.title("Welcome to <NameofApplication>")
+    third_window.title("4BIM Project")
     third_window.geometry("600x600")
     third_window.resizable(False, False)
 
@@ -144,6 +166,8 @@ def open_third_window():
 
 # ------------------- MAIN APPLICATION -------------------
 def open_main_window():
+    """Opens main window where the 10 random photos are displayed"""
+
     global selected_images
     selected_images = []
 
@@ -169,7 +193,7 @@ def open_main_window():
     attributes_modified.remove("Bags Under Eyes")
 
     main_window = tk.Toplevel()
-    main_window.title("Application Dev Log")
+    main_window.title("4BIM Project")
     main_window.geometry("1000x600")
     main_window.resizable(False, False)
     main_window.configure(bg="#ecd7c6")
@@ -226,11 +250,14 @@ def open_main_window():
 
     main_window.grid_columnconfigure(0, weight=1)  # Stretch columns in grid
 
+###########################
+#####WELCOME WINDOW #######
+###########################
 
 
 if __name__ == "__main__":
     welcome_window = tk.Tk()
-    welcome_window.title("Welcome to <NameofApplication>")
+    welcome_window.title("Welcome to RobotPortraits")
     welcome_window.geometry("600x600")
     welcome_window.resizable(False, False)
 
@@ -241,7 +268,7 @@ if __name__ == "__main__":
     welcome_window.grid_rowconfigure(0, weight=1)
     welcome_window.grid_columnconfigure(0, weight=1)
 
-    welcome_label = tk.Label(welcome_frame, text="Welcome to <NameofApplication>", fg="black", font=("Century Gothic", 28, "bold"), bg="#ecd7c6")
+    welcome_label = tk.Label(welcome_frame, text="Welcome to RobotPortraits", fg="black", font=("Century Gothic", 28, "bold"), bg="#ecd7c6")
     welcome_label.place(x=300, y=200, anchor=tk.CENTER)
 
     description_string = (
