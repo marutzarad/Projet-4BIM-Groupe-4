@@ -23,7 +23,7 @@ transform = transforms.Compose([
 ])
 
 # Répertoire des images
-image_dir = "C:/Users/adele/Documents/4A local/S2/Projet_WEB/data_celebia/Img-20250407T213121Z-001/Img/img_align_celeba/img_align_celeba"
+image_dir = "sample/"
 
 # Dataset personnalisé
 class CustomImageDataset(Dataset):
@@ -53,7 +53,7 @@ latent_dimension = 512
 class VAE(nn.Module):
     def __init__(self, latent_dim):
         super(VAE, self).__init__()
-        
+
         # Encodeur
         self.encoder = nn.Sequential(
             nn.Conv2d(3, 32, 4, 2, 1),
@@ -168,9 +168,9 @@ if training:
             avg_loss = running_loss / (pbar.n + 1)
 
             pbar.set_description(f"Epoch {epoch+1}: loss = {avg_loss:.3f}")
-    torch.save(vae.state_dict(), "C:/Users/adele/Documents/4A local/S2/Projet_WEB/vae_weights_7.pth")
+    torch.save(vae.state_dict(), "/vae_weights_4.4.0.pth")
 else:
-    vae.load_state_dict(torch.load("C:/Users/adele/Documents/4A local/S2/Projet_WEB/vae_weights_7.pth"))
+    vae.load_state_dict(torch.load("vae_weights_4.4.0.pth", map_location=device))
 
 vae.eval()
 
@@ -238,7 +238,7 @@ images = next(iter(dataloader))
 import pandas as pd
 
 # Chemin vers le CSV
-ATTR_CSV = "C:/Users/adele/Documents/4A local/S2/Projet_WEB/list_attr_celeba.csv"  # Fichier CSV des attributs modifié avec les noms d'images corrigés
+ATTR_CSV = "list_attr_celeba.csv"  # Fichier CSV des attributs modifié avec les noms d'images corrigés
 
 # Chargement du fichier CSV des attributs
 attr_df = pd.read_csv(ATTR_CSV, index_col=0)
@@ -344,22 +344,22 @@ def compute_attribute_directions_from_csv(model, device):
         transforms.Resize((IMG_SIZE, IMG_SIZE)),
         transforms.ToTensor()
     ])
-    
+
     print("🔄 Chargement et encodage des images CelebA pour calcul des attributs...")
-    
-    attr_df = pd.read_csv("C:/Users/adele/Documents/4A local/S2/Projet_WEB/list_attr_celeba.csv", sep=';', index_col=0)
+
+    attr_df = pd.read_csv("list_attr_celeba.csv", sep=';', index_col=0)
     attr_names = list(attr_df.columns)
     selected_df = attr_df.sample(n=NB_SAMPLES, random_state=42)
     images, attrs = [], []
-    
+
     for img_name, row in tqdm(selected_df.iterrows(), total=NB_SAMPLES):
         img_name_with_extension = img_name.strip()
         path = os.path.join(IMG_DIR, img_name_with_extension)
-        
+
         if not os.path.exists(path):
             print(f"⚠️ L'image {img_name_with_extension} n'a pas été trouvée dans le dossier.")
             continue
-        
+
         try:
             img = Image.open(path).convert("RGB")
             img = transform(img)
@@ -368,18 +368,18 @@ def compute_attribute_directions_from_csv(model, device):
         except Exception as e:
             print(f"⚠️ Échec de chargement de l'image {img_name_with_extension} : {e}")
             continue
-    
+
     if len(images) == 0:
         raise RuntimeError("Aucune image valide n'a été chargée.")
-    
+
     images = torch.stack(images).to(device)
-    
+
     with torch.no_grad():
         mu, _ = model.encode(images)
         latents = mu.cpu().numpy()
-    
+
     attrs = np.array(attrs)
-    
+
     return latents, attrs, attr_names
 
 # ----- 9. Boucle évolutive manuelle -----
@@ -401,7 +401,7 @@ def genetic_manual_loop(initial_images, model, device, mutation_strength=0.1):
             except Exception as e:
                 print(f"⚠️ Erreur lors du calcul de la direction pour '{attr}' : {e}")
                 continue
-        
+
         print(f"✅ {len(attribute_directions)} directions d'attributs calculées.")
 
     parents_latents = get_latents_from_images(initial_images, model, device)
@@ -449,4 +449,3 @@ def genetic_manual_loop(initial_images, model, device, mutation_strength=0.1):
 
 
 genetic_manual_loop(images, vae, device)
-
