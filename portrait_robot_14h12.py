@@ -289,7 +289,7 @@ def generate_initial_population(parents_latents, n_children=10, mutation_strengt
     children = []
     for _ in range(n_children):
         p1, p2 = np.random.choice(len(parents_latents), 2, replace=True)
-        alpha = np.random.rand()
+        alpha = 0.5
         child = alpha * parents_latents[p1] + (1 - alpha) * parents_latents[p2]
         mutation = np.random.randn(*child.shape) * mutation_strength
         child += mutation
